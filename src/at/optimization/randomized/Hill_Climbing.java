@@ -38,6 +38,29 @@ public abstract class Hill_Climbing {
 		return workingObject;
 	}
 	
+	/*
+	 * a randomized hill climbing algorithm
+	 * 
+	 * which restarts after every try for loops-times
+	 * 
+	 * uses hillClimbing
+	 * 
+	 */
+	public static <T extends Comparable<T>> T randomizedHillClimbing(List<T> list, int loops){
+		
+		T workingObject = hillClimbing(list);
+		
+		for(int i = 1; i < loops; i++){
+			T testObject = hillClimbing(list);
+			if(testObject.compareTo(workingObject) > 0)
+				workingObject = testObject;
+		}
+		
+		return workingObject;
+		
+	}
+	
+	
 	//if left side has a greater value, return true
 	private static <T extends Comparable<T>> boolean checkLeft(List<T> list, int objectPosition){
 		
@@ -50,6 +73,7 @@ public abstract class Hill_Climbing {
 			return false;
 		
 	}
+	
 	
 	//if right side has a greater value, return true
 	private static <T extends Comparable<T>> boolean checkRight(List<T> list, int objectPosition){
