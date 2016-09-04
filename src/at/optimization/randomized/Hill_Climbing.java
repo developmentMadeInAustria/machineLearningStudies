@@ -1,9 +1,12 @@
 package at.optimization.randomized;
 
 import java.util.List;
+import java.util.Random;
 
 public abstract class Hill_Climbing {
-
+	
+	static Random rnd = new Random();
+	
 	/* 
 	 * an easy hill climbing algorithm 
 	 * 
@@ -14,7 +17,7 @@ public abstract class Hill_Climbing {
 	 */
 	public static <T extends Comparable<T>> T hillClimbing(List<T> list){		
 		
-		int workingNumber = (int) Math.random() * (list.size() - 1); 
+		int workingNumber = rnd.nextInt(list.size() - 1); 
 		T workingObject = list.get(workingNumber);
 		
 		if(checkRight(list, workingNumber)){

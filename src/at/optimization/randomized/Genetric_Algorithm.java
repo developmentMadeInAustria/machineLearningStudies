@@ -1,6 +1,5 @@
 package at.optimization.randomized;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
