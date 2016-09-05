@@ -18,4 +18,4 @@ In contrast to Hill Climbing, you are at Simulated Annealing allowed to go downw
 
 Genetic Algorithms are a completely different way to analyze data and to find an optimum. Here you allways take the upper half of your samples, and *mix* them, the right terminus is crossover. That way you always get new samples and each round you take the upper half and mix them again until the data is good enough. If you want to learn more, click [here](https://en.wikipedia.org/wiki/Genetic_algorithm).
 
-> Later there will follow more algorithms about machine Learning
+> Later there will follow more algorithms about Machine Learning

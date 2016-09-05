@@ -10,12 +10,11 @@ public abstract class Simulated_Annealing {
 	
 	private static Random rnd = new Random();
 	
-	public static <T extends Comparable<T>> T simulatedAnnealing(List<T> list, double temperature){
+	public static <T extends Comparable<T>> T simulatedAnnealing(List<T> list, double temperature, double coolDownRate){
 		
 		T actualSample = list.get(rnd.nextInt(list.size()-1));
 		int direction;
 		int searchSpace = 3;
-		double coolDownRate = 0.05;
 		
 		if(list.indexOf(actualSample) == 0)
 			direction = left;
