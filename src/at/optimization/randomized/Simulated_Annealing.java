@@ -61,7 +61,7 @@ public abstract class Simulated_Annealing {
 	 */
 	private static <T> T findSample(List<T> list, int searchSpace, int actualSample, int comingDirection){
 		
-		int walkingNumber = (int) (rnd.nextInt(searchSpace + 1)) * (-1 * comingDirection);
+		int walkingNumber = (rnd.nextInt(searchSpace + 1)) * (-1 * comingDirection);
 		
 		if(actualSample > 0 || actualSample < list.size() - 1){
 			if(actualSample + walkingNumber <= 0)
