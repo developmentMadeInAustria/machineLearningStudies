@@ -1,15 +1,18 @@
 package at.optimization.randomized;
 
 import java.util.List;
+import java.util.Random;
 
 public abstract class Simulated_Annealing {
 
 	public static int left = -1;
 	public static int right = 1;
 	
+	private static Random rnd = new Random();
+	
 	public static <T extends Comparable<T>> T simulatedAnnealing(List<T> list, double temperature){
 		
-		T actualSample = list.get((int) Math.random() * list.size());
+		T actualSample = list.get(rnd.nextInt(list.size()-1));
 		int direction;
 		int searchSpace = 3;
 		double coolDownRate = 0.05;
@@ -19,7 +22,7 @@ public abstract class Simulated_Annealing {
 		else if(list.indexOf(actualSample) == list.size() - 1)
 			direction = right;
 		else
-			direction = Math.random() >= 0.5 ? left : right;
+			direction = rnd.nextBoolean() ? left : right;
 			
 		while(temperature >= 0.05){
 			T testSample = findSample(list, searchSpace, list.indexOf(actualSample), direction);
@@ -58,7 +61,7 @@ public abstract class Simulated_Annealing {
 	 */
 	private static <T> T findSample(List<T> list, int searchSpace, int actualSample, int comingDirection){
 		
-		int walkingNumber = (int) (Math.random() * searchSpace + 1) * (-1 * comingDirection);
+		int walkingNumber = (int) (rnd.nextInt(searchSpace + 1)) * (-1 * comingDirection);
 		
 		if(actualSample > 0 || actualSample < list.size() - 1){
 			if(actualSample + walkingNumber <= 0)

@@ -5,7 +5,7 @@ import java.util.Random;
 
 public abstract class Hill_Climbing {
 	
-	static Random rnd = new Random();
+	private static Random rnd = new Random();
 	
 	/* 
 	 * an easy hill climbing algorithm 
