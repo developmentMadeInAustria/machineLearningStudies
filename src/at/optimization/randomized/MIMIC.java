@@ -9,6 +9,19 @@ public abstract class MIMIC {
 	public static <T extends Distribution<E>, E extends GivingVariables> E mimicAlgorithm(T distribution, Function<E, Double> function){
 		
 		List<E> sampleList = new ArrayList<>();
+		double treshold;
+		
+		for(int i = 0; i < 10000; i++){
+			E nextSample = distribution.generateSample();
+			if(!sampleList.contains(nextSample))
+				sampleList.add(nextSample);
+		}
+		
+		treshold = generateTreshold(sampleList, function);
+		
+	}
+	
+	public static double generateTreshold(List<?> list, Function<?, Double> function){
 		
 	}
 	
