@@ -2,7 +2,10 @@ package at.optimization.randomized;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 public abstract class MIMIC {
@@ -29,7 +32,11 @@ public abstract class MIMIC {
 		}
 		threshold = generateThreshold(sampleList, function);
 		
-		
+		Map<E, Map<V,Boolean>> variables = new HashMap<>();
+		for(E element : sampleList){
+			variables.put(element, element.returnVariables());
+		}
+		Map<V, Double> probabilityOfVariables = calculateProbabilitiesBinary(variables);
 		
 	}
 	
@@ -42,6 +49,33 @@ public abstract class MIMIC {
 				threshold = value;
 		}
 		return threshold;
+	}
+	
+	public static <V,E> Map<V, Double> calculateProbabilitiesBinary(Map<E, Map<V,Boolean>> variablesMap){
+		
+		Map<V, Double> probabilityOfVariables = new HashMap<>();
+		Set<E> keys = variablesMap.keySet();
+		Set<V> variables = variablesMap.get(keys.iterator().next()).keySet();
+		for(V key : variables){
+			probabilityOfVariables.put(key, 0.0);
+		}
+		Map<V, Integer> summedValues = new HashMap<>();
+		for(E keyItem : keys){
+			for(V variable : variables){
+				int value = variablesMap.get(keyItem).get(variable) ? 1 : 0;
+				if(summedValues.containsKey(variable)){
+					summedValues.replace(variable, summedValues.get(variable) + value);
+				}else{
+					summedValues.put(variable, value);
+				}	
+			}
+		}
+		for(V key : probabilityOfVariables.keySet()){
+			probabilityOfVariables.replace(key, (double) summedValues.get(key)/variablesMap.size());
+		}
+		
+		return probabilityOfVariables;
+		
 	}
 	
 }
