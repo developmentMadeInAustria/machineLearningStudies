@@ -1,7 +1,9 @@
 package at.optimization.randomized;
 
-public interface GivingVariables<T> {
+import java.util.Map;
 
-	public T returnVariables();
+public interface GivingVariables<T,V> {
+
+	public Map<T,V> returnVariables();
 	
 }
