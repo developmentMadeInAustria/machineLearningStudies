@@ -21,8 +21,15 @@ public abstract class MIMIC {
 		
 	}
 	
-	public static double generateTreshold(List<?> list, Function<?, Double> function){
+	public static <E> double generateTreshold(List<E> list, Function<E, Double> function){
 		
+		double threshold = Double.MAX_VALUE;
+		for(E element : list){
+			double value = function.apply(element);
+			if(value < threshold)
+				threshold = value;
+		}
+		return threshold;
 	}
 	
 }
