@@ -51,6 +51,11 @@ public abstract class MIMIC {
 		return threshold;
 	}
 	
+	/*
+	 * calculates the probability of a binary variable in the given Map
+	 * 
+	 * returns a Map with a probability for each variable
+	 */
 	public static <V,E> Map<V, Double> calculateProbabilitiesBinary(Map<E, Map<V,Boolean>> variablesMap){
 		
 		Map<V, Double> probabilityOfVariables = new HashMap<>();
@@ -59,10 +64,10 @@ public abstract class MIMIC {
 		for(V key : variables){
 			probabilityOfVariables.put(key, 0.0);
 		}
-		Map<V, Integer> summedValues = new HashMap<>();
+		Map<V, Double> summedValues = new HashMap<>();
 		for(E keyItem : keys){
 			for(V variable : variables){
-				int value = variablesMap.get(keyItem).get(variable) ? 1 : 0;
+				double value = variablesMap.get(keyItem).get(variable) ? 1 : 0;
 				if(summedValues.containsKey(variable)){
 					summedValues.replace(variable, summedValues.get(variable) + value);
 				}else{
@@ -71,10 +76,27 @@ public abstract class MIMIC {
 			}
 		}
 		for(V key : probabilityOfVariables.keySet()){
-			probabilityOfVariables.replace(key, (double) summedValues.get(key)/variablesMap.size());
+			probabilityOfVariables.replace(key, summedValues.get(key)/variablesMap.size());
 		}
 		
 		return probabilityOfVariables;
+		
+	}
+	
+	/*
+	 * calculates the probability of two binary variables, both being true
+	 * 
+	 * returns the probability of both being true
+	 */
+	public static <T, V, E> double calculateProbabilitiesBinary(Map<E, Map<V,Boolean>> variablesMap, T[] variables){
+		
+		double summedValues = 0.0;
+		Set<E> keys = variablesMap.keySet();
+		for(E keyItem : keys){
+			summedValues += variablesMap.get(keyItem).get(variables[0]) && 
+					variablesMap.get(keyItem).get(variables[1]) ? 1 : 0;
+		}
+		return summedValues/variablesMap.size();
 		
 	}
 	
