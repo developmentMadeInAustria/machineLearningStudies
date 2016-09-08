@@ -3,6 +3,7 @@ package at.optimization.randomized;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +37,7 @@ public abstract class MIMIC {
 		for(E element : sampleList){
 			variables.put(element, element.returnVariables());
 		}
-		Map<V, Double> probabilityOfVariables = calculateProbabilitiesBinary(variables);
+		Map<List<V>, Double> mutualInformation = mutualInformationBinary(variables);
 		
 	}
 	
@@ -88,16 +89,46 @@ public abstract class MIMIC {
 	 * 
 	 * returns the probability of both being true
 	 */
-	public static <T, V, E> double calculateProbabilitiesBinary(Map<E, Map<V,Boolean>> variablesMap, T[] variables){
+	public static <T, V, E> double calculateProbabilitiesBinary(Map<E, Map<V,Boolean>> variablesMap, List<T> variables){
 		
 		double summedValues = 0.0;
 		Set<E> keys = variablesMap.keySet();
 		for(E keyItem : keys){
-			summedValues += variablesMap.get(keyItem).get(variables[0]) && 
-					variablesMap.get(keyItem).get(variables[1]) ? 1 : 0;
+			summedValues += variablesMap.get(keyItem).get(variables.get(0)) && 
+					variablesMap.get(keyItem).get(variables.get(1)) ? 1 : 0;
 		}
 		return summedValues/variablesMap.size();
 		
+	}
+	
+	/*
+	 *an algorithm, which calculates the mutualInformation for a Map of elements with boolean variables
+	 *
+	 * returns the mutual information of the variables in a Map with a List<two variables> as key and 
+	 * their mutual information (Double)
+	 */
+	public static <V,E> Map<List<V>, Double> mutualInformationBinary(Map<E, Map<V,Boolean>> variables){
+		
+		Map<List<V>, Double> mutualInformationMap = new HashMap<>();
+		Map<V, Double> singleProbabilities = calculateProbabilitiesBinary(variables);
+		Iterator<V> variableIterator = singleProbabilities.keySet().iterator();
+		
+		for(V variable : singleProbabilities.keySet()){
+			while(variableIterator.next() != variable){}
+			while(variableIterator.hasNext()){
+				V next = variableIterator.next();
+				List<V> bothVariables = new ArrayList<>();
+				bothVariables.add(variable);
+				bothVariables.add(next);
+				double probabilityOfBoth = calculateProbabilitiesBinary(variables, bothVariables);
+				double mutualInformation = Math.log(probabilityOfBoth/(singleProbabilities.get(variable)
+						* singleProbabilities.get(next)));
+				mutualInformationMap.put(bothVariables, mutualInformation);
+				variableIterator = singleProbabilities.keySet().iterator();
+			}
+		}
+		
+		return mutualInformationMap;	
 	}
 	
 }
