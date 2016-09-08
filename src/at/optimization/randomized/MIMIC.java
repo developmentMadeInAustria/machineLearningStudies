@@ -39,6 +39,7 @@ public abstract class MIMIC {
 		}
 		Map<List<V>, Double> mutualInformation = mutualInformationBinary(variables);
 		
+		
 	}
 	
 	public static <E> double generateThreshold(List<E> list, Function<E, Double> function){
