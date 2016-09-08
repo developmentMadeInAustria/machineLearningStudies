@@ -37,8 +37,9 @@ public abstract class MIMIC {
 		for(E element : sampleList){
 			variables.put(element, element.returnVariables());
 		}
+		Set<V> variablesList = sampleList.get(0).returnVariables().keySet();
 		Map<List<V>, Double> mutualInformation = mutualInformationBinary(variables);
-		
+		SpanningTree<V> tree = primAlgorithm(variablesList, mutualInformation);
 		
 	}
 	
@@ -130,6 +131,53 @@ public abstract class MIMIC {
 		}
 		
 		return mutualInformationMap;	
+	}
+	
+	/*
+	 * generates a minimum spanning tree with the prim algorithm
+	 */
+	public static <T> SpanningTree<T> primAlgorithm(Set<T> variables, Map<List<T>, Double> mutualInformation){
+		
+		T rootElement = variables.iterator().next();
+		Map<T,T> parentMap = new HashMap<>();
+		List<T> usedElements = new ArrayList<>();
+		List<List<T>> usingKeys = new ArrayList<>();
+		Map<List<T>, Double> removeMap = mutualInformation;
+		usedElements.add(rootElement);
+		for(List<T> elementList : mutualInformation.keySet()){
+			if(elementList.contains(rootElement)){
+				usingKeys.add(elementList);
+				removeMap.remove(elementList);
+			}	
+		}
+		variables.remove(rootElement);
+		while(variables.size() > 0){
+			T lowestVariable = variables.iterator().next();
+			T parent = null;
+			double lowestValue = Double.MAX_VALUE;
+			for(List<T> elements : usingKeys){
+				if(mutualInformation.get(elements) < lowestValue){
+					lowestValue = mutualInformation.get(elements);
+					lowestVariable = usedElements.contains(elements.get(0)) ? elements.get(1) : elements.get(0);
+					parent = usedElements.contains(elements.get(0)) ? elements.get(0) : elements.get(1);
+				}
+			}
+			for(List<T> list : usingKeys){
+				if(list.contains(lowestVariable))
+					usingKeys.remove(list);
+			}
+			for(List<T> elementList : removeMap.keySet()){
+				if(elementList.contains(lowestVariable)){
+					usingKeys.add(elementList);
+					removeMap.remove(elementList);
+				}
+			}
+			usedElements.add(lowestVariable);
+			variables.remove(lowestVariable);
+			parentMap.put(lowestVariable, parent);
+		}
+		
+		return new SpanningTree<T>(rootElement, parentMap);
 	}
 	
 }
