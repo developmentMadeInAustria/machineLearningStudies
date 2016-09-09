@@ -16,6 +16,7 @@ public abstract class MIMIC {
 	public static <T extends Distribution<E>, E extends GivingVariables<V,Boolean>,V> List<SpanningTree<V,E>> binaryMimicAlgorithm(T distribution, Function<E, Double> function){
 		
 		Map<E, Double> sampleMap = new HashMap<>();
+		Map<E, Double> secondsampleMap = sampleMap;
 		List<SpanningTree<V,E>> spanningTrees = new ArrayList<>();
 		double threshold;
 		
@@ -30,7 +31,7 @@ public abstract class MIMIC {
 		for(E element : sampleMap.keySet()){
 			lowestSamples.add(element);
 		}
-		lowestSamples.sort((e1, e2) -> {return sampleMap.get(e1) > sampleMap.get(e2) ?  
+		lowestSamples.sort((e1, e2) -> {return secondsampleMap.get(e1) > secondsampleMap.get(e2) ?  
 				1 : -1;});
 		for(int i = 0; i < mapSize/2; i++){
 			lowestSamples.remove(lowestSamples.size() - 1);
@@ -46,7 +47,34 @@ public abstract class MIMIC {
 		Map<List<V>, Double> mutualInformation = mutualInformationBinary(variables);
 		SpanningTree<V,E> tree = primAlgorithm(variablesList, mutualInformation);
 		tree.setSampleMap(sampleMap);
+		spanningTrees.add(tree);
 		
+		while(sampleMap.size() > 10){
+			
+			sampleMap = distribution.generateSamples(200, threshold, tree, sampleMap, 
+					calculateProbabilitiesBinary(variables));
+			lowestSamples.clear();
+			for(E element : sampleMap.keySet()){
+				lowestSamples.add(element);
+			}
+			lowestSamples.sort((e1, e2) -> {return secondsampleMap.get(e1) > secondsampleMap.get(e2) ?  
+					1 : -1;});
+			for(int i = 0; i < mapSize/2; i++){
+				lowestSamples.remove(lowestSamples.size() - 1);
+			}
+			sampleMap.remove(lowestSamples);
+			threshold = generateThreshold(sampleMap);
+			
+			variables.clear();
+			for(E element : sampleMap.keySet()){
+				variables.put(element, element.returnVariables());
+			}
+			variablesList = sampleMap.keySet().iterator().next().returnVariables().keySet();
+			mutualInformation = mutualInformationBinary(variables);
+			tree = primAlgorithm(variablesList, mutualInformation);
+			tree.setSampleMap(sampleMap);
+			spanningTrees.add(tree);
+		}
 		
 		return spanningTrees;
 	}
