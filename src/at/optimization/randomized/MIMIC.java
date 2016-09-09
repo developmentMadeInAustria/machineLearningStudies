@@ -13,41 +13,49 @@ public abstract class MIMIC {
 	
 	
 	//a mimic algorithm, where the variables are boolean 
-	public static <T extends Distribution<E>, E extends GivingVariables<V,Boolean>,V> E binaryMimicAlgorithm(T distribution, Function<E, Double> function){
+	public static <T extends Distribution<E>, E extends GivingVariables<V,Boolean>,V> List<SpanningTree<V,E>> binaryMimicAlgorithm(T distribution, Function<E, Double> function){
 		
-		List<E> sampleList = new ArrayList<>();
+		Map<E, Double> sampleMap = new HashMap<>();
+		List<SpanningTree<V,E>> spanningTrees = new ArrayList<>();
 		double threshold;
 		
 		for(int i = 0; i < 10000; i++){
 			E nextSample = distribution.generateSample();
-			if(!sampleList.contains(nextSample))
-				sampleList.add(nextSample);
+			if(!sampleMap.containsKey(nextSample))
+				sampleMap.put(nextSample, function.apply(nextSample));
 		}
 		
-		Collections.sort(sampleList, (e1, e2) -> {return function.apply(e1) > function.apply(e2) ? 1 : 
-			function.apply(e1) == function.apply(e2) ? 0 : -1;});
-		
-		final int listSize = sampleList.size();
-		for(int i = 0; i < listSize/2; i++){
-			sampleList.remove(0);
+		List<E> lowestSamples = new ArrayList<>();
+		final int mapSize = sampleMap.size();
+		for(E element : sampleMap.keySet()){
+			lowestSamples.add(element);
 		}
-		threshold = generateThreshold(sampleList, function);
+		lowestSamples.sort((e1, e2) -> {return sampleMap.get(e1) > sampleMap.get(e2) ?  
+				1 : -1;});
+		for(int i = 0; i < mapSize/2; i++){
+			lowestSamples.remove(lowestSamples.size() - 1);
+		}
+		sampleMap.remove(lowestSamples);
+		threshold = generateThreshold(sampleMap);
 		
 		Map<E, Map<V,Boolean>> variables = new HashMap<>();
-		for(E element : sampleList){
+		for(E element : sampleMap.keySet()){
 			variables.put(element, element.returnVariables());
 		}
-		Set<V> variablesList = sampleList.get(0).returnVariables().keySet();
+		Set<V> variablesList = sampleMap.keySet().iterator().next().returnVariables().keySet();
 		Map<List<V>, Double> mutualInformation = mutualInformationBinary(variables);
-		SpanningTree<V> tree = primAlgorithm(variablesList, mutualInformation);
+		SpanningTree<V,E> tree = primAlgorithm(variablesList, mutualInformation);
+		tree.setSampleMap(sampleMap);
 		
+		
+		return spanningTrees;
 	}
 	
-	public static <E> double generateThreshold(List<E> list, Function<E, Double> function){
+	public static <E> double generateThreshold(Map<E, Double> map){
 		
 		double threshold = Double.MAX_VALUE;
-		for(E element : list){
-			double value = function.apply(element);
+		for(E element : map.keySet()){
+			double value = map.get(element);
 			if(value < threshold)
 				threshold = value;
 		}
@@ -136,7 +144,7 @@ public abstract class MIMIC {
 	/*
 	 * generates a minimum spanning tree with the prim algorithm
 	 */
-	public static <T> SpanningTree<T> primAlgorithm(Set<T> variables, Map<List<T>, Double> mutualInformation){
+	public static <T,E> SpanningTree<T,E> primAlgorithm(Set<T> variables, Map<List<T>, Double> mutualInformation){
 		
 		T rootElement = variables.iterator().next();
 		Map<T,T> parentMap = new HashMap<>();
@@ -177,7 +185,7 @@ public abstract class MIMIC {
 			parentMap.put(lowestVariable, parent);
 		}
 		
-		return new SpanningTree<T>(rootElement, parentMap);
+		return new SpanningTree<T,E>(rootElement, parentMap);
 	}
 	
 }
