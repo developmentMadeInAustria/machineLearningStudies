@@ -44,7 +44,7 @@ public abstract class MIMIC {
 			variables.put(element, element.returnVariables());
 		}
 		Set<V> variablesList = sampleMap.keySet().iterator().next().returnVariables().keySet();
-		Map<List<V>, Double> mutualInformation = mutualInformationBinary(variables);
+		Map<List<V>, Double> mutualInformation = mutualInformationBinaryNegative(variables);
 		SpanningTree<V,E> tree = primAlgorithm(variablesList, mutualInformation);
 		tree.setSampleMap(sampleMap);
 		spanningTrees.add(tree);
@@ -70,7 +70,7 @@ public abstract class MIMIC {
 				variables.put(element, element.returnVariables());
 			}
 			variablesList = sampleMap.keySet().iterator().next().returnVariables().keySet();
-			mutualInformation = mutualInformationBinary(variables);
+			mutualInformation = mutualInformationBinaryNegative(variables);
 			tree = primAlgorithm(variablesList, mutualInformation);
 			tree.setSampleMap(sampleMap);
 			spanningTrees.add(tree);
@@ -145,7 +145,7 @@ public abstract class MIMIC {
 	 * returns the mutual information of the variables in a Map with a List<two variables> as key and 
 	 * their mutual information (Double)
 	 */
-	public static <V,E> Map<List<V>, Double> mutualInformationBinary(Map<E, Map<V,Boolean>> variables){
+	public static <V,E> Map<List<V>, Double> mutualInformationBinaryNegative(Map<E, Map<V,Boolean>> variables){
 		
 		Map<List<V>, Double> mutualInformationMap = new HashMap<>();
 		Map<V, Double> singleProbabilities = calculateProbabilitiesBinary(variables);
@@ -164,6 +164,9 @@ public abstract class MIMIC {
 				mutualInformationMap.put(bothVariables, mutualInformation);
 				variableIterator = singleProbabilities.keySet().iterator();
 			}
+		}
+		for(List<V> key : mutualInformationMap.keySet()){
+			mutualInformationMap.replace(key, mutualInformationMap.get(key) * -1);
 		}
 		
 		return mutualInformationMap;	
