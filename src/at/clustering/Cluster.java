@@ -15,6 +15,9 @@ public class Cluster<T> {
 		this.center = center;
 	}
 	
+	public void addPoint(T point){
+		points.add(point);
+	}
 	public void setPoints(List<T> points){
 		this.points = points;
 	}
