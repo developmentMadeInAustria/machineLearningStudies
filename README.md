@@ -22,4 +22,12 @@ Genetic Algorithms are a completely different way to analyze data and to find an
 
 At the Mimic algorithm the goal is to gain structure instead of just getting one end point for a distribution. Structure means in this context to get a probability distribution for every step in time. To reach this goal we first create samples from a distribution. Then we set a threshold t, and every value of the samples we created above has to be above that threshold, otherwise we remove it. Now we want to create a structure, which we can easily sample from and in which every sample, where the value is above t, has the same likelihood. One of the easiest ways to do this, is to find a dependency tree. In such a configuration every single element has one parent, except the root, and the parent is the element, which maximizes the probability that the next generation element is true, if the parent element is true. So we get a dependency tree, which fits to the goals we defined above. To reach a tree like this, we have to find calculate the [Mutual Information](https://en.wikipedia.org/wiki/Mutual_information) between all points. After that we just have to find a [minimum spanning tree](https://en.wikipedia.org/wiki/Minimum_spanning_tree) of the negative forms of all the negative mutual information, because we want to maximize mutual information and it is easier to calculate a minimum spanning tree instead of a maximum one so we switch signs. We create our spanning tree with [prim](https://en.wikipedia.org/wiki/Prim%27s_algorithm) and now we have our tree. Now we just have to sample from our spanning tree and iterate until our result is good enough. A binary form of the MIMIC algorithm is implemented in this repository.
 
+## 2. Clustering
+
+In the second part of this repository is code about some Clustering algorithms. The first one is Single Linkage Clustering and later on K - means Clustering and Soft Clustering will follow.
+
+### a, Single Linkage Clustering
+
+At Single Linkage Clustering all given elements are at the beginning in their own cluster. Now the we merge always the clusters, which have the smallest distance to each other, until we have the number of clusters, we want. To find out more about Single Linkage Clustering, click [here](https://en.wikipedia.org/wiki/Single-linkage_clustering)
+
 > Later there will follow more algorithms about Machine Learning
