@@ -30,5 +30,8 @@ public class Cluster<T> {
 	public T getCenter(){
 		return center;
 	}
+	public boolean contains(T point){
+		return points.contains(point);
+	}
 	
 }
